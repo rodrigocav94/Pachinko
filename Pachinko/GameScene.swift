@@ -91,6 +91,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             ball.physicsBody!.contactTestBitMask = ball.physicsBody!.collisionBitMask // Notify all collisions
             ball.physicsBody?.restitution = 0.4 // Bounciness, 0 not bouncy at all and 1 is super bouncy.
             ball.position = location
+            ball.position.y = 820
             ball.name = "ball"
             addChild(ball)
         }
