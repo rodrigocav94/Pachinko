@@ -7,7 +7,7 @@
 
 import SpriteKit
 
-class GameScene: SKScene {
+class GameScene: SKScene, SKPhysicsContactDelegate {
     override func didMove(to view: SKView) {
         let background = SKSpriteNode(imageNamed: "background")
         background.position = CGPoint(x: 590, y: 410) // Place image in the center of the screen.
@@ -16,6 +16,7 @@ class GameScene: SKScene {
         addChild(background)
         
         physicsBody = SKPhysicsBody(edgeLoopFrom: frame) // This physicsBody comes from SKScene, it's a property of the main thing
+        physicsWorld.contactDelegate = self
         
         for i in 0...4 {
             let distanceBetweenBouncers = 1180 / 4
@@ -39,8 +40,10 @@ class GameScene: SKScene {
         
         let ball = SKSpriteNode(imageNamed: "ballRed")
         ball.physicsBody = SKPhysicsBody(circleOfRadius: ball.size.width / 2) // Behave like circle instead of Square
+        ball.physicsBody!.contactTestBitMask = ball.physicsBody!.collisionBitMask // Notify all collisions
         ball.physicsBody?.restitution = 0.4 // Bounciness, 0 not bouncy at all and 1 is super bouncy.
         ball.position = location
+        ball.name = "ball"
         addChild(ball)
     }
     
@@ -61,9 +64,11 @@ class GameScene: SKScene {
         if isGood {
             slotBase = SKSpriteNode(imageNamed: "slotBaseGood")
             slotGlow = SKSpriteNode(imageNamed: "slotGlowGood")
+            slotBase.name = "good" // Give a name to a SKSpriteNode before adding it as a child
         } else {
             slotBase = SKSpriteNode(imageNamed: "slotBaseBad")
             slotGlow = SKSpriteNode(imageNamed: "slotGlowBad")
+            slotBase.name = "bad"
         }
         
         slotBase.scale(to: CGSize(width: 147.5, height: 16))
@@ -71,11 +76,37 @@ class GameScene: SKScene {
         slotBase.position = position
         slotGlow.position = position
         
+        slotBase.physicsBody = SKPhysicsBody(rectangleOf: slotBase.size)
+        slotBase.physicsBody?.isDynamic = false
+        
         addChild(slotBase)
         addChild(slotGlow)
         
         let spin = SKAction.rotate(byAngle: .pi, duration: 10) // Rotate 180º for 10 seconds
         let spinForever = SKAction.repeatForever(spin) // Repeat animation forever
         slotGlow.run(spinForever) // Add action to SKSpriteNode
+    }
+    
+    func collisionBetween(ball: SKNode, object: SKNode) {
+        if object.name == "good" { // Verifying if one of the two objects that collided is a slot.
+            destroy(ball: ball)
+        } else if object.name == "bad" {
+            destroy(ball: ball)
+        }
+        
+        // Ignores if the collision object is also a ball
+    }
+    
+    func destroy(ball: SKNode) {
+        ball.removeFromParent()
+    }
+    
+    func didBegin(_ contact: SKPhysicsContact) {
+        guard let nodeA = contact.bodyA.node, let nodeB = contact.bodyB.node else { return } // Avoiding ghost collisions.
+        if nodeA.name == "ball" { // Verifying if one of the two objects that collided is a ball.
+            collisionBetween(ball: nodeA, object: nodeB)
+        } else if nodeB.name == "ball" {
+            collisionBetween(ball: nodeB, object: nodeA)
+        }
     }
 }
