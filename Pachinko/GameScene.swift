@@ -8,6 +8,24 @@
 import SpriteKit
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
+    var scoreLabel: SKLabelNode!
+    var editLabel: SKLabelNode!
+    
+    var score = 0 {
+        didSet {
+            scoreLabel.text = "Score: \(score)"
+        }
+    }
+    var editingMode = false {
+        didSet {
+            if editingMode {
+                editLabel.text = "Done"
+            } else {
+                editLabel.text = "Edit"
+            }
+        }
+    }
+    
     override func didMove(to view: SKView) {
         let background = SKSpriteNode(imageNamed: "background")
         background.position = CGPoint(x: 590, y: 410) // Place image in the center of the screen.
@@ -31,6 +49,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             makeSlot(at: CGPoint(x: xCoordinate, y: 0), isGood: isSlotGood)
         }
         
+        scoreLabel = SKLabelNode(fontNamed: "Chalkduster")
+        scoreLabel.text = "Score: 0"
+        scoreLabel.horizontalAlignmentMode = .right
+        scoreLabel.position = CGPoint(x: 1136, y: 752)
+        addChild(scoreLabel)
+        
+        editLabel = SKLabelNode(fontNamed: "Chalkduster")
+        editLabel.text = "Edit"
+        editLabel.position = CGPoint(x: 80, y: 752)
+        addChild(editLabel)
+        
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -38,13 +67,33 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         guard let touch = touches.first else { return } // If the user has touched with 2 or 3 fingers at the same time, get the first.
         let location = touch.location(in: self) // Find where this touch was in my whole game scene.
         
-        let ball = SKSpriteNode(imageNamed: "ballRed")
-        ball.physicsBody = SKPhysicsBody(circleOfRadius: ball.size.width / 2) // Behave like circle instead of Square
-        ball.physicsBody!.contactTestBitMask = ball.physicsBody!.collisionBitMask // Notify all collisions
-        ball.physicsBody?.restitution = 0.4 // Bounciness, 0 not bouncy at all and 1 is super bouncy.
-        ball.position = location
-        ball.name = "ball"
-        addChild(ball)
+        let objects = nodes(at: location)
+        
+        if objects.contains(editLabel) {
+            editingMode.toggle()
+            return
+        }
+        
+        if editingMode {
+            let size = CGSize(width: Int.random(in: 16...128), height: 16)
+            let box = SKSpriteNode(color: UIColor(red: CGFloat.random(in: 0...1), green: CGFloat.random(in: 0...1), blue: CGFloat.random(in: 0...1), alpha: 1), size: size)
+            box.zRotation = CGFloat.random(in: 0...3)
+            box.position = location
+
+            box.physicsBody = SKPhysicsBody(rectangleOf: box.size)
+            box.physicsBody?.isDynamic = false
+
+            addChild(box)
+        } else {
+            // Create a ball
+            let ball = SKSpriteNode(imageNamed: "ballRed")
+            ball.physicsBody = SKPhysicsBody(circleOfRadius: ball.size.width / 2) // Behave like circle instead of Square
+            ball.physicsBody!.contactTestBitMask = ball.physicsBody!.collisionBitMask // Notify all collisions
+            ball.physicsBody?.restitution = 0.4 // Bounciness, 0 not bouncy at all and 1 is super bouncy.
+            ball.position = location
+            ball.name = "ball"
+            addChild(ball)
+        }
     }
     
     func makeBouncer(at position: CGPoint) {
@@ -90,11 +139,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func collisionBetween(ball: SKNode, object: SKNode) {
         if object.name == "good" { // Verifying if one of the two objects that collided is a slot.
             destroy(ball: ball)
+            score += 1
         } else if object.name == "bad" {
             destroy(ball: ball)
+            score -= 1
         }
-        
-        // Ignores if the collision object is also a ball
+        // Does nothing if the collision object is also a ball.
     }
     
     func destroy(ball: SKNode) {
