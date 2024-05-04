@@ -10,6 +10,13 @@ import SpriteKit
 class GameScene: SKScene, SKPhysicsContactDelegate {
     var scoreLabel: SKLabelNode!
     var editLabel: SKLabelNode!
+    var ballsLabel: SKLabelNode!
+    
+    var ballsRemaining = 5 {
+        didSet {
+            ballsLabel.text = "Remaining: \(ballsRemaining) ball\(ballsRemaining == 1 ? "" : "s")"
+        }
+    }
     
     var score = 0 {
         didSet {
@@ -55,6 +62,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         scoreLabel.position = CGPoint(x: 1136, y: 752)
         addChild(scoreLabel)
         
+        ballsLabel = SKLabelNode(fontNamed: "Chalkduster")
+        ballsLabel.text = "Remaining: \(ballsRemaining) ball\(ballsRemaining == 1 ? "" : "s")"
+        ballsLabel.horizontalAlignmentMode = .right
+        ballsLabel.position = CGPoint(x: 1136, y: 708)
+        addChild(ballsLabel)
+        
         editLabel = SKLabelNode(fontNamed: "Chalkduster")
         editLabel.text = "Edit"
         editLabel.position = CGPoint(x: 80, y: 752)
@@ -82,9 +95,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
             box.physicsBody = SKPhysicsBody(rectangleOf: box.size)
             box.physicsBody?.isDynamic = false
+            box.name = "box"
 
             addChild(box)
-        } else {
+        } else if ballsRemaining > 0 {
+            ballsRemaining -= 1
             // Create a ball
             let ballNames = ["ballBlue", "ballCyan", "ballGreen", "ballGrey", "ballPurple", "ballRed", "ballYellow"]
             let ball = SKSpriteNode(imageNamed: ballNames.randomElement() ?? "ballRed")
@@ -142,11 +157,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if object.name == "good" { // Verifying if one of the two objects that collided is a slot.
             destroy(ball: ball)
             score += 1
+            ballsRemaining += 1
         } else if object.name == "bad" {
             destroy(ball: ball)
             score -= 1
         }
         // Does nothing if the collision object is also a ball.
+        
+        if object.name == "box" {
+            object.removeFromParent()
+        }
     }
     
     func destroy(ball: SKNode) {
