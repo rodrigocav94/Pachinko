@@ -86,7 +86,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             addChild(box)
         } else {
             // Create a ball
-            let ball = SKSpriteNode(imageNamed: "ballRed")
+            let ballNames = ["ballBlue", "ballCyan", "ballGreen", "ballGrey", "ballPurple", "ballRed", "ballYellow"]
+            let ball = SKSpriteNode(imageNamed: ballNames.randomElement() ?? "ballRed")
             ball.physicsBody = SKPhysicsBody(circleOfRadius: ball.size.width / 2) // Behave like circle instead of Square
             ball.physicsBody!.contactTestBitMask = ball.physicsBody!.collisionBitMask // Notify all collisions
             ball.physicsBody?.restitution = 0.4 // Bounciness, 0 not bouncy at all and 1 is super bouncy.
