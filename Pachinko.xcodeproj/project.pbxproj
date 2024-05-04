@@ -14,6 +14,7 @@
 		9F237D612BE3FCAF004BB2DA /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 9F237D602BE3FCAF004BB2DA /* Base */; };
 		9F237D632BE3FCB0004BB2DA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9F237D622BE3FCB0004BB2DA /* Assets.xcassets */; };
 		9F237D662BE3FCB0004BB2DA /* Base in Resources */ = {isa = PBXBuildFile; fileRef = 9F237D652BE3FCB0004BB2DA /* Base */; };
+		9F39F1AC2BE6B147001D6C83 /* FireParticles.sks in Resources */ = {isa = PBXBuildFile; fileRef = 9F39F1AB2BE6B147001D6C83 /* FireParticles.sks */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,6 +26,7 @@
 		9F237D602BE3FCAF004BB2DA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		9F237D622BE3FCB0004BB2DA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9F237D652BE3FCB0004BB2DA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		9F39F1AB2BE6B147001D6C83 /* FireParticles.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = FireParticles.sks; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,6 +59,7 @@
 		9F237D542BE3FCAF004BB2DA /* Pachinko */ = {
 			isa = PBXGroup;
 			children = (
+				9F39F1AA2BE6B116001D6C83 /* Content */,
 				9F237D552BE3FCAF004BB2DA /* AppDelegate.swift */,
 				9F237D572BE3FCAF004BB2DA /* GameScene.sks */,
 				9F237D5B2BE3FCAF004BB2DA /* GameScene.swift */,
@@ -66,6 +69,14 @@
 				9F237D642BE3FCB0004BB2DA /* LaunchScreen.storyboard */,
 			);
 			path = Pachinko;
+			sourceTree = "<group>";
+		};
+		9F39F1AA2BE6B116001D6C83 /* Content */ = {
+			isa = PBXGroup;
+			children = (
+				9F39F1AB2BE6B147001D6C83 /* FireParticles.sks */,
+			);
+			path = Content;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -128,6 +139,7 @@
 			files = (
 				9F237D582BE3FCAF004BB2DA /* GameScene.sks in Resources */,
 				9F237D612BE3FCAF004BB2DA /* Base in Resources */,
+				9F39F1AC2BE6B147001D6C83 /* FireParticles.sks in Resources */,
 				9F237D632BE3FCB0004BB2DA /* Assets.xcassets in Resources */,
 				9F237D662BE3FCB0004BB2DA /* Base in Resources */,
 			);
