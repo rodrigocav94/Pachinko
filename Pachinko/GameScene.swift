@@ -11,6 +11,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var scoreLabel: SKLabelNode!
     var editLabel: SKLabelNode!
     var ballsLabel: SKLabelNode!
+    var gameOverLabel: SKLabelNode!
+    var tryAgainLabel: SKLabelNode!
+    
+    var ballsInGame = 0
     
     var ballsRemaining = 5 {
         didSet {
@@ -23,12 +27,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             scoreLabel.text = "Score: \(score)"
         }
     }
+    
     var editingMode = false {
         didSet {
             if editingMode {
                 editLabel.text = "Done"
             } else {
                 editLabel.text = "Edit"
+            }
+        }
+    }
+    
+    var isGameOver = false {
+        didSet {
+            if isGameOver {
+                displayGameOver()
+            } else {
+                tryAgain()
             }
         }
     }
@@ -73,6 +88,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         editLabel.position = CGPoint(x: 80, y: 752)
         addChild(editLabel)
         
+        gameOverLabel = SKLabelNode(fontNamed: "Chalkduster")
+        gameOverLabel.fontSize = 64
+        gameOverLabel.fontColor = .red
+        gameOverLabel.text = "Game Over"
+        gameOverLabel.position = CGPoint(x: 590, y: 410)
+        gameOverLabel.isHidden = true
+        addChild(gameOverLabel)
+        
+        tryAgainLabel = SKLabelNode(fontNamed: "Chalkduster")
+        tryAgainLabel.text = "Tap to try again!"
+        tryAgainLabel.position = CGPoint(x: 590, y: 346)
+        tryAgainLabel.isHidden = true
+        addChild(tryAgainLabel)
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -81,6 +109,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let location = touch.location(in: self) // Find where this touch was in my whole game scene.
         
         let objects = nodes(at: location)
+        
+        if isGameOver {
+            isGameOver.toggle()
+            return
+        }
         
         if objects.contains(editLabel) {
             editingMode.toggle()
@@ -109,6 +142,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             ball.position = location
             ball.position.y = 820
             ball.name = "ball"
+            ballsInGame += 1
             addChild(ball)
         }
     }
@@ -161,6 +195,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         } else if object.name == "bad" {
             destroy(ball: ball)
             score -= 1
+            
+            if ballsRemaining == 0 && ballsInGame == 0 {
+                isGameOver = true
+            }
         }
         // Does nothing if the collision object is also a ball.
         
@@ -175,6 +213,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             addChild(fireParticles)
         }
         
+        ballsInGame -= 1
         ball.removeFromParent()
     }
     
@@ -184,6 +223,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             collisionBetween(ball: nodeA, object: nodeB)
         } else if nodeB.name == "ball" {
             collisionBetween(ball: nodeB, object: nodeA)
+        }
+    }
+    
+    func displayGameOver() {
+        gameOverLabel.isHidden = false
+        tryAgainLabel.isHidden = false
+    }
+    
+    func tryAgain() {
+        gameOverLabel.isHidden = true
+        tryAgainLabel.isHidden = true
+        ballsRemaining = 5
+        score = 0
+        enumerateChildNodes(withName: "box") { box,_ in
+            box.removeFromParent()
         }
     }
 }
