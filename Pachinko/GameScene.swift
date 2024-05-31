@@ -211,6 +211,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if let fireParticles = SKEmitterNode(fileNamed: "FireParticles") {
             fireParticles.position = ball.position
             addChild(fireParticles)
+            
+            let delay = SKAction.wait(forDuration: 1.5)
+            let removeParticle = SKAction.run { [weak fireParticles] in
+                fireParticles?.removeFromParent()
+            }
+            fireParticles.run(SKAction.sequence([delay, removeParticle]))
         }
         
         ballsInGame -= 1
